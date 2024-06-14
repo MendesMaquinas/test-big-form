@@ -2,6 +2,8 @@
 import axios from "axios";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import InputForm from "@/components/template/inputs/InputForm";
+import { useForm } from "react-hook-form";
 
 export default function Home() {
 
@@ -168,7 +170,7 @@ export default function Home() {
     );
   }
 
-  async function handleSubmit() {
+  async function handleSubmitt() {
     if (!allBindingFieldsAreValid()) {
       return null;
     }
@@ -253,10 +255,16 @@ export default function Home() {
     }
   };
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
   return (
     <div className="h-svh bg-gray-800">
       <form>
-        
+        <InputForm errors={errors} register={register} label="Teste" name="name" type="text" defaultValue={requests?.[0].initialDate} disabled={false} />
       </form>
     </div>
   );

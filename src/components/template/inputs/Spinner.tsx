@@ -1,8 +1,6 @@
 import spinnerOptions from '../../../helpers/spinnerOptions';
 import SpinnerProps from '../../../interfaces/SpinnerProps';
 
-import { IoClose } from "react-icons/io5";
-import { FaAngleDown } from "react-icons/fa";
 
 export default function Spinner(props: SpinnerProps) {
 
@@ -11,7 +9,7 @@ export default function Spinner(props: SpinnerProps) {
             <div className='relative border border-gray-300 rounded-lg py-3 px-2 shadow-sm flex items-center justify-center gap-2'>
                 <label className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-[#efefef] px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 start-1 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">{props.label}</label>
                 <p className='text-sm font-medium text-red-700'>Nenhum registro foi encontrado</p>
-                <IoClose size={15} className='text-red-700' />
+                
             </div>
         )
     }
