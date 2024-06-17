@@ -108,6 +108,7 @@ export default function EquipamentModal(props: EquipamentModalProps) {
         defaultValue={props.equipament.name}
       />
       <SpinnerFrom
+        errors={errors}
         label="Linha"
         name="line_id"
         register={register}

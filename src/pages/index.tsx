@@ -1,131 +1,66 @@
-
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import InputForm from "@/components/template/inputs/InputForm";
-import { useForm } from "react-hook-form";
+import SpinnerFrom from "@/components/template/inputs/SpinnerForm";
+import Spinner from "@/components/template/inputs/Spinner";
+import { emitWarning } from "process";
 
 export default function Home() {
-
-  const { data: requests } = useQuery({
-    queryKey: ["requests_request_modal"],
+  const { data: requests, isLoading: isLoadingRequests } = useQuery({
+    queryKey: ["requests_data"],
     queryFn: () =>
-      fetch(
-        "https://apirequestfields-production.up.railway.app/requests"
-      ).then((res) => res.json()),
+      fetch("https://apirequestfields-production.up.railway.app/requests").then(
+        (res) => res.json()
+      ),
   });
 
-  const { data: clients } = useQuery({
-    queryKey: ["clients_request_modal"],
+  const { data: clients, isLoading: isLoadingClients } = useQuery({
+    queryKey: ["clients_data"],
     queryFn: () =>
       fetch(
         "https://apirequestfields-production.up.railway.app/clients/actives"
       ).then((res) => res.json()),
   });
 
-  const { data: projects, refetch: refetchProjects } = useQuery({
-    queryKey: ["projects_request_modal"],
-    queryFn: () => fetchProjects(),
+  const { data: projects, isLoading: isLoadingProjects } = useQuery({
+    queryKey: ["projects_data"],
+    queryFn: () =>
+      fetch(`https://apirequestfields-production.up.railway.app/projects`).then(
+        (res) => res.json()
+      ),
   });
 
-  async function fetchProjects() {
-    const response = await fetch(
-      `https://apirequestfields-production.up.railway.app/projects/client/`
-    );
-
-    if (!response.ok) {
-      //setProject(0);
-      return [];
-    }
-    let result = await response.json();
-    //setProject(result[0].id);
-    return result;
-  }
-
-  const { data: lines, refetch: refetchLines } = useQuery({
-    queryKey: ["lines_request_modal"],
-    queryFn: () => fetchLines(),
+  const { data: lines, isLoading: isLoadingLines } = useQuery({
+    queryKey: ["lines_data"],
+    queryFn: () =>
+      fetch(`https://apirequestfields-production.up.railway.app/lines`).then(
+        (res) => res.json()
+      ),
   });
 
-  const fetchLines = async () => {
-    const response = await fetch(
-      `https://apirequestfields-production.up.railway.app/lines`
-    );
-    if (!response.ok) {
-      //setLine(0);
-      return [];
-    }
-    let result = await response.json();
-    //setLine(result[0].id);
-    return result;
-  };
-
-  const { data: equipaments, refetch: refetchEquipaments } = useQuery({
-    queryKey: ["equipaments_request_modal"],
-    queryFn: () => fetchEquipaments(),
+  const { data: equipaments, isLoading: isLoadingEquipaments } = useQuery({
+    queryKey: ["equipaments_data"],
+    queryFn: () =>
+      fetch(
+        `https://apirequestfields-production.up.railway.app/equipaments`
+      ).then((res) => res.json()),
   });
 
-  const fetchEquipaments = async () => {
-    const response = await fetch(
-      `https://apirequestfields-production.up.railway.app/equipaments/line`
-    );
-    if (!response.ok) {
-      //setEquipament(0);
-      return [];
-    }
-    let result = await response.json();
-    //setEquipament(result[0].id);
-    return result;
-  };
-
-  const { data: reasons } = useQuery({
-    queryKey: ["reasons_request_modal"],
+  const { data: reasons, isLoading: isLoadingReasons } = useQuery({
+    queryKey: ["reasons_data"],
     queryFn: () =>
       fetch("https://apirequestfields-production.up.railway.app/reasons").then(
         (res) => res.json()
       ),
   });
 
-  const { data: urgencies, refetch: refetchUrgencies } = useQuery({
-    queryKey: ["urgencies_request_modal"],
-    queryFn: () => fetchUrgencies(),
+  const { data: urgencies, isLoading: isLoadingUrgencies } = useQuery({
+    queryKey: ["urgencies_data"],
+    queryFn: () =>
+      fetch(
+        `https://apirequestfields-production.up.railway.app/urgencies`
+      ).then((res) => res.json()),
   });
-
-  async function fetchUrgencies() {
-    const response = await fetch(
-      `https://apirequestfields-production.up.railway.app/urgencies`
-    );
-
-    if (!response.ok) {
-      //setUrgency(0);
-      return [];
-    }
-    let result = await response.json();
-    //setUrgency(result[0].id);
-    return result;
-  }
-
-  /*
-  useEffect(() => {
-    refetchProjects();
-    refetchLines();
-    refetchEquipaments();
-  }, [client, refetchEquipaments, refetchLines, refetchProjects]);
-
-  useEffect(() => {
-    refetchLines();
-    refetchEquipaments();
-  }, [project, refetchEquipaments, refetchLines]);
-
-  useEffect(() => {
-    refetchEquipaments();
-  }, [line, refetchEquipaments]);
-
-  useEffect(() => {
-    approved == 0 && setDone(0);
-  }, [approved]);
-
-  */
 
   let aprovedOptions = [
     { title: "Sim", value: 1 },
@@ -174,7 +109,7 @@ export default function Home() {
     if (!allBindingFieldsAreValid()) {
       return null;
     }
-/*
+    /*
     if ((done == 1 || !props?.request?.id) && selectedFiles.length < 1) {
       Toast.error(toast, "Informe no mínimo uma imagem.");
       return null;
@@ -255,17 +190,58 @@ export default function Home() {
     }
   };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const [client, setClient] = useState(requests?.[30]?.Client?.id);
+  const [project, setProject] = useState(requests?.[30]?.Project.id);
+  const [line, setLine] = useState(requests?.[30]?.Line?.id);
+
+  if (
+    isLoadingClients ||
+    isLoadingEquipaments ||
+    isLoadingLines ||
+    isLoadingProjects ||
+    isLoadingReasons ||
+    isLoadingReasons ||
+    isLoadingRequests ||
+    isLoadingUrgencies
+  ) {
+    return (
+      <div className="h-svh bg-gray-800 flex flex-col items-center justify-center relative">
+        <div className="h-10 w-10 animate-spin border-2 border-yellow-400 rounded absolute"></div>
+        <div className="h-14 w-14 animate-spin border-2 border-yellow-400 rounded rotate-90 absolute"></div>
+        <div className="h-12 w-12 animate-spin border-2 border-yellow-400 rounded rotate-45 absolute"></div>
+        <div className="h-10 w-10 animate-spin border-2 border-yellow-400 rounded rotate-12 absolute"></div>
+        <div className="h-14 w-14 animate-spin border-2 border-yellow-400 rounded rotate-90"></div>
+      </div>
+    );
+  }
+
+  console.log(projects.filter(reg => reg.Client.id == requests?.[30]?.Client.id));
+  
 
   return (
-    <div className="h-svh bg-gray-800">
-      <form>
-        <InputForm errors={errors} register={register} label="Teste" name="name" type="text" defaultValue={requests?.[0].initialDate} disabled={false} />
-      </form>
+    <div className="h-svh bg-gray-800 flex flex-col items-center">
+      <Spinner
+        array={clients}
+        label="Cliente"
+        name="client_id"
+        selectedId={requests?.[30]?.Client.id}
+        setSelectedValue={setClient}
+        disabled={false}
+      />
+      <Spinner
+        array={projects.filter(reg => reg.Client.id == requests?.[30]?.Client.id)}
+        label="Projeto"
+        name="client_id"
+        selectedId={requests?.[30]?.Project.id}
+        setSelectedValue={setProject}
+        disabled={false}
+      />
+
+      <small>{JSON.stringify({
+      client,
+      project,
+      line
+    })}</small>
     </div>
   );
 }
